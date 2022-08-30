@@ -75,12 +75,12 @@ public class Basic_Drive extends OpMode
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontRight.setDirection(DcMotor.Direction.REVERSE);
-        intake = hardwareMap.get(CRServo.class, "intake");
-        connectorWheels = hardwareMap.get(DcMotor.class, "connectorWheels");
-        outtake = hardwareMap.get(DcMotor.class, "outtake");
-        baseArm=hardwareMap.get(DcMotor.class,"baseArm");
-        gripServo=hardwareMap.get(Servo.class,"gripServo");
-        connector=hardwareMap.get(CRServo.class,"connector");
+        // intake = hardwareMap.get(CRServo.class, "intake");
+        //connectorWheels = hardwareMap.get(DcMotor.class, "connectorWheels");
+        //outtake = hardwareMap.get(DcMotor.class, "outtake");
+        //baseArm=hardwareMap.get(DcMotor.class,"baseArm");
+        //gripServo=hardwareMap.get(Servo.class,"gripServo");
+        //connector=hardwareMap.get(CRServo.class,"connector");
         
 
 
@@ -97,9 +97,6 @@ public class Basic_Drive extends OpMode
      */
     @Override
     public void init_loop() {
-
-
-
     }
 
     /*
@@ -115,8 +112,20 @@ public class Basic_Drive extends OpMode
      */
     @Override
     public void loop() {
-        
+        if (gamepad1.right_bumper) {
+           frontLeft.setPower(-1);
+           backLeft.setPower(1);
+           frontRight.setPower(1);
+           backRight.setPower(-1);
+            
+        }
        
+       if (gamepad1.left_bumper) {
+           frontLeft.setPower(1);
+           backLeft.setPower(-1);
+           frontRight.setPower(-1);
+           backRight.setPower(1);
+       }
         //Implementation of a Controller Deadzone to prevent accidental movement due to uncentered joystick.
         if(Math.abs(gamepad1.left_stick_x) < 0.05){
             deadzoneX = 0;
@@ -138,77 +147,6 @@ public class Basic_Drive extends OpMode
         else{
             deadzoneRotate = gamepad1.right_stick_x;
         }
-        
-        //Intake Code
-        if (gamepad1.left_bumper == true)
-        {
-            intake.setPower(.5);
-        }
-        else if (gamepad1.left_trigger>=.95)
-        {
-            intake.setPower(-.5);
-        }
-        else
-            intake.setPower(0.0);
-       
-        //Outtake 
-        if(gamepad1.y && !yToggle){
-            if(!flywheel){
-                outtake.setPower(.92);
-                flywheel=true;}
-            else{
-                outtake.setPower(0);
-                flywheel=false;
-            }
-            yToggle = true;
-        } else if(!gamepad1.y) yToggle = false;
-        
-        
-        //Connector Code
-        if(gamepad1.right_bumper ==true){
-            connector.setPower(.75);
-        }
-        else if(gamepad1.right_trigger>=.95)
-        {
-            connector.setPower(-.75);
-        }
-        else{
-           connector.setPower(0.0);
-            
-        }
-        
-        
-        //Wobble Arm Controller Code   
-        if(gamepad1.dpad_up)
-        {
-            baseArm.setPower(-.75);
-        }
-        else if(gamepad1.dpad_down)
-        {
-            baseArm.setPower(.5);
-        }
-        else
-        {
-            baseArm.setPower(-.1);
-        }
-        
-        //Wobble Arm Gripper Code 
-        if(gamepad1.a && !aToggle){
-            if(!closed){
-                gripServo.setPosition(-1);
-                closed=true;}
-            else{
-                gripServo.setPosition(1);
-                closed=false;
-            }
-            aToggle = true;
-        } else if(!gamepad1.a) aToggle = false;
-       
-        
-
-        
-    
-        //Mecanum wheel drive calculations
         double r = Math.hypot(deadzoneX, -deadzoneY); //deadzones are incorporated into these values
         double robotAngle = Math.atan2(-deadzoneY, deadzoneX) - Math.PI / 4;
         double rightX = deadzoneRotate/1.25;
@@ -218,24 +156,21 @@ public class Basic_Drive extends OpMode
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
         //Power set to each motor based on these calculations
-        frontRight.setPower(v1*.75);
-        frontLeft.setPower(v4*.75);
-        backRight.setPower(v3*.75);
-        backLeft.setPower(v2*.75);
-
-//----
-        //Telemetry used for testing encoder values.
-        telemetry.addData("frontLeftPosition", frontLeft.getCurrentPosition());
-        telemetry.addData("backLeftPosition", backLeft.getCurrentPosition());
-        telemetry.addData("frontRightPosition", frontRight.getCurrentPosition());
-        telemetry.addData("backRightPosition", backRight.getCurrentPosition());
-        telemetry.addData("wobbleGoalPosition",baseArm.getCurrentPosition());
+        frontRight.setPower(v1*.9);
+        frontLeft.setPower(v4*.9);
+        backRight.setPower(v3*.9);
+        backLeft.setPower(v2*.9);
+        
+        
+        // telemetry.addData("frontLeftPosition", frontLeft.getCurrentPosition());
+        // telemetry.addData("backLeftPosition", backLeft.getCurrentPosition());
+        // telemetry.addData("frontRightPosition", frontRight.getCurrentPosition());
+        // telemetry.addData("backRightPosition", backRight.getCurrentPosition());
+        // telemetry.addData("wobbleGoalPosition",baseArm.getCurrentPosition());
         telemetry.addData("r",r);
         telemetry.addData("t",robotAngle);
     }
-
     @Override
     public void stop() {
     }
-
 }
