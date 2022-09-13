@@ -50,6 +50,7 @@ public class Basic_Drive extends OpMode
     private DcMotor connectorWheels=null;
     private DcMotor outtake=null;
     private DcMotor baseArm=null;
+    private DcMotor linearSlide=null;
     private Servo gripServo=null;
     private CRServo connector = null;
 
@@ -75,6 +76,8 @@ public class Basic_Drive extends OpMode
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontRight.setDirection(DcMotor.Direction.REVERSE);
+        linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
+        linearSlide.setDirection(DcMotor.Direction.FORWARD);
         // intake = hardwareMap.get(CRServo.class, "intake");
         //connectorWheels = hardwareMap.get(DcMotor.class, "connectorWheels");
         //outtake = hardwareMap.get(DcMotor.class, "outtake");
@@ -82,12 +85,10 @@ public class Basic_Drive extends OpMode
         //gripServo=hardwareMap.get(Servo.class,"gripServo");
         //connector=hardwareMap.get(CRServo.class,"connector");
         
-
-
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-
-
+        if (linearSlide != null)
+        telemetry.addData("Status", "Linear slide motor detected")
 
     }
 
@@ -117,9 +118,12 @@ public class Basic_Drive extends OpMode
            backLeft.setPower(1);
            frontRight.setPower(1);
            backRight.setPower(-1);
-            
         }
        
+       if (gamepad1.left_trigger) {linearSlide.setpower(0.5);}
+       if (gamepad1.right_trigger) {linearSlide.setpower(-0.5);}
+
+       // Strafing 
        if (gamepad1.left_bumper) {
            frontLeft.setPower(1);
            backLeft.setPower(-1);
